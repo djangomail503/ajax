@@ -37,7 +37,7 @@
                         )
                     },
                     errors:function(response){
-                        alert(response["responseJSON"]["errors"])
+                        alert( JSON.parse(response['error'])
                     }
 
                     
