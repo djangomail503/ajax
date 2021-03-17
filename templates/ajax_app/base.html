@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.js" integrity="sha256-H+K7U5CnXl1h5ywQfKtSj8PCmoN9aaq30gDh27Xc0jk=" crossorigin="anonymous"></script>
+
+    <script>
+        $(document).ready( function(){
+
+            $("#user-class").submit(
+
+            function(e){
+                e.preventDefault();
+
+                var ser_data = $(this).serialize();
+
+                $.ajax({
+                    type:"POST",
+                    url:"{% url 'app:add_user' %}",
+                    data: ser_data,
+
+                    success: function(response){
+                        var instance = JSON.parse(response['instance'])
+                        var fields = instance[0]['fields']
+
+                        $('#cable tbody').prepend(
+
+                        `<tr>
+                            <td>${fields["username"]||""}</td>
+                            <td>${fields["name"]||""}</td>
+                            <td>${fields["email"]||""}</td>
+                            <td>${fields["link"]||""}</td>
+                        </tr>`
+                        )
+                    },
+                    errors:function(response){
+                        alert(response["responseJSON"]["errors"])
+                    }
+
+                    
+                })
+            }
+            )
+        })
+    </script>
+
+</head>
+<body>
+    <h1>Welcome</h1>
+
+    <form id = "user-class" method='POST'>
+        {% csrf_token %}
+        {{form.as_p}}
+        <input type="submit" value = 'Create User'>
+    </form>
+
+    <table id="cable">
+        <thead>
+            <tr>
+                <th>User name</th>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Link</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            {% for user in users %}
+                <tr>
+                    <td>{{user.username}}</td>
+                    <td>{{user.name}}</td>
+                    <td>{{user.email}}</td>
+                    <td>{{user.link}}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>
